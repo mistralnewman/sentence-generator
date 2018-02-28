@@ -2,61 +2,91 @@
 # By Hannah Newman <HN860433@wcupa.edu>
 
 import random
-                                    # These are types of vocabulary for which I was unable to find
-                                    # a reasonably long and useful list online.
-verbs_tr = ["ate","killed","exploded","painted","loved","slapped","held","created","fed","opened","grabbed","admired","hugged","held","taught","poked","broke"]
-verbs_itr = ["sang","ran","wrote","smiled","flew","studied","accelerated","screamed","laughed","floated","slept","played","died","painted","cried","worked"]
-determiners = ["a(n)","the","her","his","that","their","this","some","our","your"]
-prepositions = ["in","outside","through","for","against","above","below","around","despite","along"]
 
-                                    # vocab lists from https://github.com/janester/mad_libs
-adjFile = open("adjectives.txt")    # get adjectives
-adjectives = adjFile.read().split("\n")
+# nouns & adjectives from https://github.com/janester/mad_libs
+# determiners and prepositions from handouts from my linguistics class
+# verbs from my brain
 
-nounFile = open("nouns.txt")        # get nouns
-nouns = nounFile.read().split("\n")
+# get adjectives
+with open("adjectives.txt","r") as adj_file:
+    adjectives = adj_file.read().split("\n")
 
-                                    # S() is the top-level sentence function
+# get nouns
+with open("nouns.txt","r") as noun_file:
+    nouns = noun_file.read().split("\n")
+
+# get transitive verbs
+with open("verbs_tr.txt", "r") as vtr_file:
+    verbs_tr = vtr_file.read().split("\n")
+
+# get intransitive verbs
+with open("verbs_itr.txt", "r") as vitr_file:
+    verbs_itr = vitr_file.read().split("\n")
+
+# get determiners
+with open("determiners.txt", "r") as det_file:
+    determiners = det_file.read().split("\n")
+
+# get prepositions
+with open("prepositions.txt", "r") as prep_file:
+    prepositions = prep_file.read().split("\n")
+
+# make a sentence!
 def S():
-    res = NP() + " " + VP()         # every sentence has a noun phrase and a verb phrase
-    if random.random() > 0.2:       # ~80% of the time, a prepositional phrase is added
-        if random.random() > 0.5:
-            res = res + " " + PP()  # ~50% of prepositional phrases come after the NP+VP
+    # every sentence has a noun phrase and a verb phrase
+    res = NP() + " " + VP()
+    # ~80% of the time, a prepositional phrase is added
+    if random.random() < 0.8:
+        # ~50% of prepositional phrases come after the NP+VP
+        if random.random() < 0.5:
+            res = res + " " + PP()
         else:
-            res = PP() + ", " + res # ~50% of prepositional phrases come before
-    return res.capitalize() + "."   # capitalizes sentence and adds period
+            res = PP() + ", " + res
+    # capitalizes sentence and adds period
+    return res.capitalize() + "."
 
-def NP():                           # NP() creates a noun phrase
+# make noun phrase
+def NP():
     res = ""
-    if random.random() > .01:       # ~99% of noun phrases have a determiner
+    # determiner ~99% of the time
+    if random.random() < 0.99:
         res += det() + " "
-    if random.random() > .7:        # ~30% of noun phrases have an adjective
+    # adjective ~30% of the time
+    if random.random() < 0.3:
         res += adj() + " "
-    res += n()                      # adds the central noun to every noun phrase
-    if random.random() > .95:       # ~5% of noun phrases have a recursive prepositional phrase
+    # noun 100% of the time
+    res += n()
+    # prepositional phrase ~3% of the time
+    if random.random() < 0.03:
         res += " " +PP()
-    return res                      # returns the result and ends the function
+    return res
 
-def VP():                           # VP() creates a verb phrase
-    if random.random() > .5:        # ~50% of verb phrases are transitive and include a noun phrase
-        return v_tr() + " " + NP()  # returns transitive verb + noun phrase
+# make verb phrase
+def VP():
+    # ~50% of verb phrases are transitive & have a noun phrase
+    if random.random() < 0.5:
+        return v_tr() + " " + NP()
+    # the other ~50% are just an intransitive verb
     else:
-        return v_itr()              # returns intransitive verb by itself
+        return v_itr()
 
-def PP():                           # PP() creates a prepositional phrase
-    return prep() + " " + NP()      # all prepositional phrases consist of a preposition and a noun phrase
+# make prepositional phrase
+def PP():
+    # a prepositional phrase is a preposition and a noun phrase
+    return prep() + " " + NP()
 
-def v_itr():                        # returns random intransitive verb
+# functions to get individual words
+def v_itr():
     return verbs_itr[random.randint(0,len(verbs_itr)-1)]
-def v_tr():                         # returns random transitive verb
+def v_tr():
     return verbs_tr[random.randint(0,len(verbs_tr)-1)]
-def n():                            # returns random noun
+def n():
     return nouns[random.randint(0,len(nouns)-1)]
-def adj():                          # returns random adjective
+def adj():
     return adjectives[random.randint(0,len(adjectives)-1)]
-def det():                          # returns random determiner
+def det():
     return determiners[random.randint(0,len(determiners)-1)]
-def prep():                         # returns random preposition
+def prep():
     return prepositions[random.randint(0,len(prepositions)-1)]
 
 for x in range(100):
